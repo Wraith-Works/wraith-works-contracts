@@ -1,0 +1,21 @@
+# This workflow will compile Solidity contracts and then publish a package to GitHub Packages when a release is created
+
+name: Contracts NPM Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.4.2'
+          registry-url: https://registry.npmjs.org/
+      - run: yarn prepackage
+      - run: yarn publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}

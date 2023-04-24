@@ -1,7 +1,7 @@
 {
-  "name": "wraith-works-contracts",
+  "name": "@wraith-works/contracts",
   "version": "0.0.1",
-  "description": "Smart contracts library for Solidity",
+  "description": "Smart contracts library for Solidity by Wraith Works",
   "repository": "git@github.com:Wraith-Works/wraith-works-contracts.git",
   "author": "TheMachinist <themachinist@wraithworks.xyz>",
   "license": "MIT",
@@ -9,12 +9,17 @@
     "/contracts/**/*.sol",
     "/build/contracts/*.json"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.8.3"
+  },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.5",
     "@nomicfoundation/hardhat-network-helpers": "^1.0.8",
     "@nomiclabs/hardhat-ethers": "^2.2.1",
     "@nomiclabs/hardhat-etherscan": "^3.1.3",
-    "@openzeppelin/contracts": "^4.8.0",
     "@typechain/ethers-v5": "^10.1.1",
     "@typechain/hardhat": "^6.1.4",
     "chai": "^4.3.7",
@@ -39,6 +44,7 @@
     "format:fix": "prettier --write \"**/*.{ts,js,sol}\"",
     "compile": "hardhat compile",
     "test": "REPORT_GAS=true hardhat test",
-    "clean": "hardhat clean"
+    "clean": "hardhat clean",
+    "prepackage": "./scripts/prepackage.sh"
   }
 }
