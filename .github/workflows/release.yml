@@ -17,6 +17,6 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: yarn prepackage
       - run: yarn remap
-      - run: yarn publish
+      - run: cd publish && yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
