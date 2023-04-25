@@ -1,6 +1,6 @@
 # This workflow will compile Solidity contracts and then publish a package to GitHub Packages when a release is created
 
-name: Contracts NPM Package
+name: Publish NPM Package
 
 on:
   release:
