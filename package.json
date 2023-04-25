@@ -45,6 +45,7 @@
     "compile": "hardhat compile",
     "test": "REPORT_GAS=true hardhat test",
     "clean": "hardhat clean",
-    "prepackage": "./scripts/prepackage.sh"
+    "prepackage": "./scripts/prepackage.sh",
+    "remap": "node ./scripts/remap.js"
   }
 }
