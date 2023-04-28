@@ -9,7 +9,6 @@ interface IMintableERC721 {
     error InvalidPrice();
 
     error MintInactive();
-    error MaxMinted();
     error NoMintsAvailable();
     error NoBalance();
 
