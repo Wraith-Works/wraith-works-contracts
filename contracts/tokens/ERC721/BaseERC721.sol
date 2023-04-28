@@ -56,7 +56,7 @@ contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
     }
 
     function _baseMint(address _to, uint256 _amount) internal {
-        if (_tokenIdCounter + _amount >= MAX_SUPPLY) revert MaxMinted();
+        if ((_tokenIdCounter + _amount) - 1 > MAX_SUPPLY) revert MaxMinted();
         for (uint256 i = 0; i < _amount; ) {
             _safeMint(_to, _tokenIdCounter);
 
