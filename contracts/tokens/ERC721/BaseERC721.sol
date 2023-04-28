@@ -44,8 +44,9 @@ contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
         _unpause();
     }
 
-    function setBaseURI(string memory _baseURI) public onlyOwner {
+    function setBaseURI(string memory _baseURI, string memory _baseURIExtension) public onlyOwner {
         baseURI = _baseURI;
+        baseURIExtension = _baseURIExtension;
     }
 
     function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
