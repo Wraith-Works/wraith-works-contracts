@@ -19,7 +19,7 @@ abstract contract RevealableERC721 is BaseERC721 {
         revealed = !revealed;
     }
 
-    function tokenURI(uint256 _tokenId) public view override returns (string memory) {
+    function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
         if (revealed) {
             return bytes(prerevealURI).length > 0 ? prerevealURI : "";
         }
