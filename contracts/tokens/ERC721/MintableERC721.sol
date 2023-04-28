@@ -158,7 +158,7 @@ abstract contract MintableERC721 is IMintableERC721, BaseERC721 {
     function maximumAmountForOwner(address _owner, bytes32[] calldata _merkleProof) public view returns (uint256) {
         if (_owner == address(0)) revert InvalidAddress();
         if (!mintActive) return 0;
-        if (_tokenIdCounter >= MAX_SUPPLY - 1) revert MaxMinted();
+        if (_tokenIdCounter >= MAX_SUPPLY) revert MaxMinted();
         if (activeMintStage >= mintStages.length) revert InvalidIndex();
 
         uint256 allowedAmount = 0;
@@ -183,7 +183,7 @@ abstract contract MintableERC721 is IMintableERC721, BaseERC721 {
         if (_owner == address(0)) revert InvalidAddress();
         if (_amount == 0) revert InvalidAmount();
         if (!mintActive) revert MintInactive();
-        if (_tokenIdCounter >= MAX_SUPPLY - 1) revert MaxMinted();
+        if (_tokenIdCounter >= MAX_SUPPLY) revert MaxMinted();
         if (activeMintStage >= mintStages.length) revert InvalidIndex();
 
         uint256 allowedAmount = 0;
