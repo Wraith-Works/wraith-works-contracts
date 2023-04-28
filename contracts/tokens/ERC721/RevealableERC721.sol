@@ -18,4 +18,11 @@ abstract contract RevealableERC721 is BaseERC721 {
     function toggleReveal() public onlyOwner {
         revealed = !revealed;
     }
+
+    function tokenURI(uint256 _tokenId) public view override returns (string memory) {
+        if (revealed) {
+            return bytes(prerevealURI).length > 0 ? prerevealURI : "";
+        }
+        return super.tokenURI(_tokenId);
+    }
 }
