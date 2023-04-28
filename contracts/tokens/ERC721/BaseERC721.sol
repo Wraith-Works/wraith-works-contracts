@@ -24,11 +24,15 @@ contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
         string memory _symbol,
         string memory _baseURI,
         string memory _baseURIExtension,
-        uint256 _maxSupply
+        uint256 _maxSupply,
+        address _royaltyReceiver,
+        uint96 _royaltyFeeNumerator
     ) ERC721(_name, _symbol) {
         baseURI = _baseURI;
         baseURIExtension = _baseURIExtension;
         MAX_SUPPLY = _maxSupply;
+
+        _setDefaultRoyalty(_royaltyReceiver, _royaltyFeeNumerator);
         _pause();
     }
 
@@ -44,7 +48,7 @@ contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
         baseURI = _baseURI;
     }
 
-    function tokenURI(uint256 _tokenId) public view override virtual returns (string memory) {
+    function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
         if (!_exists(_tokenId)) revert NoTokenId();
         return
             bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, _tokenId.toString(), baseURIExtension)) : "";
