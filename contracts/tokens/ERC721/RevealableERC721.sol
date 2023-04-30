@@ -11,11 +11,11 @@ abstract contract RevealableERC721 is BaseERC721 {
         prerevealURI = _prerevealURI;
     }
 
-    function setPrerevealURI(string memory _prerevealURI) public onlyOwner {
+    function setPrerevealURI(string memory _prerevealURI) external onlyOwner {
         prerevealURI = _prerevealURI;
     }
 
-    function toggleReveal() public onlyOwner {
+    function toggleReveal() external onlyOwner {
         revealed = !revealed;
     }
 
