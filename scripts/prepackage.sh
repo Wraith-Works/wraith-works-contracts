@@ -10,5 +10,6 @@ find artifacts/contracts/ -name "*.json" -exec cp {} publish/build/contracts/ \;
 rm publish/build/contracts/*.dbg.json
 
 cp -r contracts/* publish/
+rm -rf publish/mocks
 cp LICENSE publish/
 cp README.md publish/
