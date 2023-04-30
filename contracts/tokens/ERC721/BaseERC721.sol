@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
     using Strings for uint256;
 
-    error NoTokenId();
+    error DoesNotExist();
     error MaxMinted();
 
     string public baseURI;
@@ -36,27 +36,47 @@ contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
         _pause();
     }
 
-    function pause() public onlyOwner {
+    function pause() external onlyOwner {
         _pause();
     }
 
-    function unpause() public onlyOwner {
+    function unpause() external onlyOwner {
         _unpause();
     }
 
-    function setBaseURI(string memory _baseURI, string memory _baseURIExtension) public onlyOwner {
+    function setBaseURI(string memory _baseURI, string memory _baseURIExtension) external onlyOwner {
         baseURI = _baseURI;
         baseURIExtension = _baseURIExtension;
     }
 
+    function setDefaultRoyalty(address _receiver, uint96 _feeNumerator) external onlyOwner {
+        _setDefaultRoyalty(_receiver, _feeNumerator);
+    }
+
+    function deleteDefaultRoyalty() external onlyOwner {
+        _deleteDefaultRoyalty();
+    }
+
+    function setTokenRoyalty(
+        uint256 _tokenId,
+        address _receiver,
+        uint96 _feeNumerator
+    ) external onlyOwner {
+        _setTokenRoyalty(_tokenId, _receiver, _feeNumerator);
+    }
+
+    function resetTokenRoyalty(uint256 _tokenId) external onlyOwner {
+        _resetTokenRoyalty(_tokenId);
+    }
+
     function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
-        if (!_exists(_tokenId)) revert NoTokenId();
+        if (!_exists(_tokenId)) revert DoesNotExist();
         return
             bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, _tokenId.toString(), baseURIExtension)) : "";
     }
 
     function _baseMint(address _to, uint256 _amount) internal {
-        if ((_tokenIdCounter + _amount) - 1 > MAX_SUPPLY) revert MaxMinted();
+        if (MAX_SUPPLY > 0 && (_tokenIdCounter + _amount) - 1 > MAX_SUPPLY) revert MaxMinted();
         for (uint256 i = 0; i < _amount; ) {
             _safeMint(_to, _tokenIdCounter);
 
