@@ -212,7 +212,7 @@ abstract contract MintableERC721 is IMintableERC721, BaseERC721 {
         return price;
     }
 
-    function mint(uint256 _amount, bytes32[] calldata _merkleProof) public payable whenNotPaused {
+    function mint(uint256 _amount, bytes32[] calldata _merkleProof) public payable {
         uint256 price = mintPriceForAmount(msg.sender, _amount, _merkleProof);
         if (nativePayment) {
             if (msg.value != price) revert InvalidPayment();

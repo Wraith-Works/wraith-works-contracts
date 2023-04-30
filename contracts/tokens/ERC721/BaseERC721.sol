@@ -57,11 +57,7 @@ contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
         _deleteDefaultRoyalty();
     }
 
-    function setTokenRoyalty(
-        uint256 _tokenId,
-        address _receiver,
-        uint96 _feeNumerator
-    ) external onlyOwner {
+    function setTokenRoyalty(uint256 _tokenId, address _receiver, uint96 _feeNumerator) external onlyOwner {
         _setTokenRoyalty(_tokenId, _receiver, _feeNumerator);
     }
 

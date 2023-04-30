@@ -1,9 +1,9 @@
-const fs = require("fs");
-const packageJson = require("../package.json");
+const fs = require('fs');
+const packageJson = require('../package.json');
 
 async function main() {
-    if (!fs.existsSync("./publish")) {
-        console.error("Run `yarn prepackage` before `yarn remap`");
+    if (!fs.existsSync('./publish')) {
+        console.error('Run `yarn prepackage` before `yarn remap`');
         process.exit(1);
     }
 
@@ -14,10 +14,10 @@ async function main() {
         repository: packageJson.repository,
         author: packageJson.author,
         license: packageJson.license,
-        files: ["**/*.sol", "/build/contracts/*.json"],
+        files: ['**/*.sol', '/build/contracts/*.json'],
         dependencies: packageJson.dependencies,
     };
-    fs.writeFileSync("./publish/package.json", JSON.stringify(newPackageJson, null, 4));
+    fs.writeFileSync('./publish/package.json', JSON.stringify(newPackageJson, null, 4));
 }
 
 main()
