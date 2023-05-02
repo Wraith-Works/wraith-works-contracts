@@ -7,7 +7,19 @@ on:
     types: [created]
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.4.2'
+          registry-url: https://registry.npmjs.org/
+      - run: yarn install
+      - run: yarn test
+
   publish-npm:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -17,6 +29,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: yarn prepackage
       - run: yarn remap
+      - run: yarn test
       - run: cd publish && yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

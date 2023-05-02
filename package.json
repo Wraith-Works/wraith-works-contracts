@@ -1,13 +1,14 @@
 {
   "name": "@wraith-works/contracts",
-  "version": "0.0.8",
+  "version": "0.1.0-beta",
   "description": "Smart contracts library for Solidity by Wraith Works",
   "repository": "git@github.com:Wraith-Works/wraith-works-contracts.git",
   "author": "TheMachinist <themachinist@wraithworks.xyz>",
   "license": "MIT",
   "files": [
     "/contracts/**/*.sol",
-    "/build/contracts/*.json"
+    "/build/contracts/*.json",
+    "!/contracts/mocks/**/*"
   ],
   "publishConfig": {
     "access": "public"
