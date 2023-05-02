@@ -17,7 +17,9 @@ describe('BaseERC721 airdrop contract test', function() {
         await airDropERC721Mock.unpause();
         expect(await airDropERC721Mock.paused()).to.equal(false);
 
-        await expect(airDropERC721Mock.connect(user1).airdrop([user1.address], [1])).to.be.revertedWith('Ownable: caller is not the owner');
+        await expect(airDropERC721Mock.connect(user1).airdrop([user1.address], [1])).to.be.revertedWith(
+            'Ownable: caller is not the owner',
+        );
     });
 
     it('Can airdrop total supply', async function() {

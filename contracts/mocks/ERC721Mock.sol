@@ -4,7 +4,9 @@ pragma solidity ^0.8.17;
 import "../tokens/ERC721/BaseERC721.sol";
 
 contract ERC721Mock is BaseERC721 {
-    constructor(uint256 _maxSupply)
+    constructor(
+        uint256 _maxSupply
+    )
         BaseERC721(
             "Example",
             "EXAMPLE",

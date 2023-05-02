@@ -21,8 +21,12 @@ describe('BaseERC721 revealable contract test', function() {
     it('BaseERC721 revealable security checks', async function() {
         const { revealableERC721Mock, user1 } = await loadFixture(deployRevealableERC721MockFixture);
 
-        await expect(revealableERC721Mock.connect(user1).setPrerevealURI('test')).to.be.revertedWith('Ownable: caller is not the owner');
-        await expect(revealableERC721Mock.connect(user1).toggleReveal()).to.be.revertedWith('Ownable: caller is not the owner');
+        await expect(revealableERC721Mock.connect(user1).setPrerevealURI('test')).to.be.revertedWith(
+            'Ownable: caller is not the owner',
+        );
+        await expect(revealableERC721Mock.connect(user1).toggleReveal()).to.be.revertedWith(
+            'Ownable: caller is not the owner',
+        );
     });
 
     it('tokenURI returns prereveal URI', async function() {
