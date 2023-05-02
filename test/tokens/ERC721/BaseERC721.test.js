@@ -43,11 +43,21 @@ describe('BaseERC721 contract test', function() {
 
         await expect(erc721Mock.connect(user1).unpause()).to.be.revertedWith('Ownable: caller is not the owner');
         await expect(erc721Mock.connect(user1).pause()).to.be.revertedWith('Ownable: caller is not the owner');
-        await expect(erc721Mock.connect(user1).setBaseURI('test1', 'test2')).to.be.revertedWith('Ownable: caller is not the owner');
-        await expect(erc721Mock.connect(user1).setDefaultRoyalty(user1.address, 750)).to.be.revertedWith('Ownable: caller is not the owner');
-        await expect(erc721Mock.connect(user1).deleteDefaultRoyalty()).to.be.revertedWith('Ownable: caller is not the owner');
-        await expect(erc721Mock.connect(user1).setTokenRoyalty(1, user1.address, 750)).to.be.revertedWith('Ownable: caller is not the owner');
-        await expect(erc721Mock.connect(user1).resetTokenRoyalty(1)).to.be.revertedWith('Ownable: caller is not the owner');
+        await expect(erc721Mock.connect(user1).setBaseURI('test1', 'test2')).to.be.revertedWith(
+            'Ownable: caller is not the owner',
+        );
+        await expect(erc721Mock.connect(user1).setDefaultRoyalty(user1.address, 750)).to.be.revertedWith(
+            'Ownable: caller is not the owner',
+        );
+        await expect(erc721Mock.connect(user1).deleteDefaultRoyalty()).to.be.revertedWith(
+            'Ownable: caller is not the owner',
+        );
+        await expect(erc721Mock.connect(user1).setTokenRoyalty(1, user1.address, 750)).to.be.revertedWith(
+            'Ownable: caller is not the owner',
+        );
+        await expect(erc721Mock.connect(user1).resetTokenRoyalty(1)).to.be.revertedWith(
+            'Ownable: caller is not the owner',
+        );
     });
 
     it('Can pause and unpause contract', async function() {
