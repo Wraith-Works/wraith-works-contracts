@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "../tokens/ERC721/AirDropERC721.sol";
+import "../tokens/ERC721/AirdropERC721.sol";
 
-contract AirDropERC721Mock is AirDropERC721 {
+contract AirdropERC721Mock is AirdropERC721 {
     constructor()
         BaseERC721(
             "Example",
