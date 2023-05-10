@@ -3,6 +3,7 @@ require('hardhat-deploy');
 require('@nomiclabs/hardhat-ethers');
 require('@nomiclabs/hardhat-etherscan');
 require('@nomicfoundation/hardhat-chai-matchers');
+require('solidity-docgen');
 
 const { resolve } = require('path');
 
@@ -54,6 +55,12 @@ const config = {
     },
     mocha: {
         timeout: 100000000,
+    },
+    docgen: {
+        outputDir: 'docs/api',
+        templates: 'templates',
+        exclude: ['mocks'],
+        pages: 'files',
     },
 };
 
