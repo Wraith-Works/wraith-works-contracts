@@ -1,14 +1,7 @@
-require('hardhat-gas-reporter');
-require('hardhat-deploy');
-require('@nomiclabs/hardhat-ethers');
-require('@nomiclabs/hardhat-etherscan');
-require('@nomicfoundation/hardhat-chai-matchers');
-require('solidity-docgen');
+require('@nomicfoundation/hardhat-toolbox');
 
 const { resolve } = require('path');
-
 const { config: dotenvConfig } = require('dotenv');
-
 dotenvConfig({ path: resolve(__dirname, './.env') });
 
 const coinMarketCapKey = process.env.COIN_MARKET_CAP_KEY ?? 'NO_COIN_MARKET_CAP_KEY';
@@ -36,7 +29,7 @@ const config = {
     solidity: {
         compilers: [
             {
-                version: '0.8.17',
+                version: '0.8.20',
                 settings: {
                     optimizer: {
                         enabled: true,
@@ -55,12 +48,6 @@ const config = {
     },
     mocha: {
         timeout: 100000000,
-    },
-    docgen: {
-        outputDir: 'docs/api',
-        templates: 'templates',
-        exclude: ['mocks'],
-        pages: 'files',
     },
 };
 
