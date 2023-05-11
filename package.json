@@ -1,6 +1,6 @@
 {
   "name": "@wraith-works/contracts",
-  "version": "0.1.0-beta",
+  "version": "0.2.0-beta",
   "description": "Smart contracts library for Solidity by Wraith Works",
   "repository": "git@github.com:Wraith-Works/wraith-works-contracts.git",
   "author": "The Machinist <themachinist@wraithworks.xyz>",
