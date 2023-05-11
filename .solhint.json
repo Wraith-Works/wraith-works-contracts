@@ -2,8 +2,8 @@
     "extends": "solhint:default",
     "plugins": ["prettier"],
     "rules": {
-      "max-line-length": ["off", 180],
+      "max-line-length": ["off", 120],
       "prettier/prettier": "error",
-      "compiler-version": ["error","^0.8.9"]
+      "compiler-version": ["error","^0.8.20"]
     }
   }

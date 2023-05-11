@@ -2,6 +2,7 @@ artifacts/
 cache/
 node_modules/
 publish/
-typechain/
+site/
+
 *.log
 .env
