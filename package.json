@@ -50,6 +50,7 @@
     "test": "REPORT_GAS=true hardhat test",
     "prepackage": "./scripts/prepackage.sh",
     "remap": "node ./scripts/remap.js",
-    "serve-docs": "mkdocs serve"
+    "serve-docs": "mkdocs serve",
+    "deploy-docs": "mkdocs gh-deploy"
   }
 }

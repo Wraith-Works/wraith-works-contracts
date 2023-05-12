@@ -7,6 +7,7 @@ site_description: >-
 # Repository
 repo_name: wraith-works/contracts
 repo_url: https://github.com/wraith-works/wraith-works-contracts
+edit_uri: edit/develop/docs/
 
 # Copyright
 copyright: Copyright &copy; 2023 Wraith Works
@@ -42,18 +43,18 @@ theme:
     - toc.follow
     - toc.integrate
   palette:
-    - scheme: default
-      primary: deep purple
-      accent: deep purple
-      toggle:
-        icon: material/brightness-7
-        name: Switch to dark mode
+    # - scheme: default
+    #   primary: deep purple
+    #   accent: deep purple
+    #   toggle:
+    #     icon: material/brightness-7
+    #     name: Switch to dark mode
     - scheme: slate
       primary: deep purple
       accent: deep purple
-      toggle:
-        icon: material/brightness-4
-        name: Switch to light mode
+      # toggle:
+      #   icon: material/brightness-4
+      #   name: Switch to light mode
   font:
     text: Roboto
     code: Roboto Mono
@@ -69,6 +70,7 @@ plugins:
 
 # Customization
 extra:
+  generator: false
   annotate:
     json: [.s2]
   social:
