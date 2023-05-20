@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./IBaseERC20.sol";
 import "../../common/Errors.sol";
 
-/// @dev Basic ERC20 contract with owner and pausability.
+/// @dev Basic ERC20 contract with owner, pausability, and authorized minting.
 contract BaseERC20 is IBaseERC20, ERC20, Ownable, Pausable {
     mapping(address => bool) public authorizedMinters;
 
