@@ -2,7 +2,7 @@
 import "@wraith-works/contracts/tokens/ERC20/BaseERC20.sol";
 ```
 
-The `BaseERC20` contract extends the basic `ERC20` contract with ownership and pausability capabilities.
+The `BaseERC20` contract extends the basic `ERC20` contract with ownership, pausability, and authorized minting capabilities.
 
 [View Contract :fontawesome-brands-github:](https://github.com/Wraith-Works/wraith-works-contracts/blob/main/contracts/tokens/ERC20/Base20.sol){ .md-button target="_blank" }
 
