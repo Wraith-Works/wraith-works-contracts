@@ -1,8 +1,7 @@
-name: Run Builds
+name: Push
 
 on:
-  pull_request:
-    types: [opened, reopened]
+  push
 
 jobs:
   build-contracts:
@@ -31,3 +30,28 @@ jobs:
           python-version: 3.x
       - run: pip install mkdocs mkdocs-material mkdocs-minify-plugin
       - run: yarn build-docs
+
+  lint-contracts:
+    name: Lint Contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.4.2'
+          registry-url: https://registry.npmjs.org/
+      - run: yarn install
+      - run: yarn lint
+      - run: yarn format
+
+  test-contracts:
+    name: Test Contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16.4.2'
+          registry-url: https://registry.npmjs.org/
+      - run: yarn install
+      - run: yarn test
