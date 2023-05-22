@@ -1,7 +1,8 @@
 name: Push
 
 on:
-  push
+  push:
+    branches-ignore: [main, develop]
 
 jobs:
   build-contracts:
