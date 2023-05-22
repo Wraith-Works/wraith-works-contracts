@@ -1,6 +1,6 @@
 {
   "name": "@wraith-works/contracts",
-  "version": "0.2.0-beta",
+  "version": "0.2.0",
   "description": "Smart contracts library for Solidity by Wraith Works",
   "repository": "git@github.com:Wraith-Works/wraith-works-contracts.git",
   "author": "The Machinist <themachinist@wraithworks.xyz>",
@@ -50,6 +50,7 @@
     "test": "REPORT_GAS=true hardhat test",
     "prepackage": "./scripts/prepackage.sh",
     "remap": "node ./scripts/remap.js",
+    "build-docs": "mkdocs build",
     "serve-docs": "mkdocs serve",
     "deploy-docs": "mkdocs gh-deploy"
   }
