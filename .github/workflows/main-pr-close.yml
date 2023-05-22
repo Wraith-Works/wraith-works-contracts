@@ -33,9 +33,6 @@ jobs:
         run: npm version patch
       - name: Git push version bump
         run: git push origin main --follow-tags --force
-      - id: set-version
-        name: Output version change
-        run: npm pkg get version
 
   publish-docs:
     name: 'Publish Documentation'
@@ -79,25 +76,3 @@ jobs:
       - run: cd publish && yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-
-  create-tag:
-    name: 'Create Tag'
-    needs: merge-pr
-    if: github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16.4.2'
-          registry-url: https://registry.npmjs.org/
-      - name: Retrieve version
-        id: version
-        run: |
-          echo "TAG_NAME=v$(npm pkg get version | tr -d '\"')" >> $GITHUB_OUTPUT
-      - uses: rickstaa/action-create-tag@v1
-        id: tag-create
-        with:
-          tag: ${{ steps.version.outputs.TAG_NAME }}
-          tag_exists_error: true
-          message: ${{ steps.version.outputs.TAG_NAME }}
