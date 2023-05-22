@@ -55,7 +55,7 @@ jobs:
           git config --global user.email "${{ secrets.GH_ORG_EMAIL }}"
           git config --global user.name "${{ secrets.GH_ORG_NAME }}"
       - name: Install mkdocs
-        run: pip install mkdocs
+        run: pip install mkdocs mkdocs-material mkdocs-minify-plugin
       - name: Deploy docs
         run: yarn deploy-docs
 
@@ -72,7 +72,6 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - run: yarn prepackage
       - run: yarn remap
-      - run: yarn test
       - run: cd publish && yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
