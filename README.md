@@ -45,6 +45,7 @@ contract MyNFT is AirdropERC721, RevealableERC721 {
             0x14c84F8aBaD55F074Ef18BEb46A7cbede6a17B10,
             750
         )
+        AutoIncrementERC721(1)
         RevealableERC721("https://example.com/prereveal.json")
     {}
 

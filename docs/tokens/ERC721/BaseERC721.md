@@ -90,12 +90,12 @@ The `BaseERC721` contract requires the following variables to be passed into the
 
 ??? "_baseMint"
     ```solidity
-    function _baseMint(address _to, uint256 _amount) internal
+    function _baseMint(address _to, uint256 _tokenId) internal
     ```
 
-    - Mint the supplied number of tokens to the given address, up to the `MAX_SUPPLY` (which may be unlimited).
+    - Mint the supplied token Id to the given address, up to the `MAX_SUPPLY` (which may be unlimited).
     - `_to`: The address to mint tokens to.
-    - `_amount`: How many tokens to mint.
+    - `_tokenId`: Token ID to mint.
 
 ## Example
 
