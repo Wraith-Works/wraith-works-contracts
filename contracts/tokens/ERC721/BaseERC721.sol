@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 /// @dev Basic ERC721 contract with various extensions for controlling max mint supply and royalities.
-contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
+abstract contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
     using Strings for uint256;
 
     /// @dev Token does not exist.
@@ -23,8 +23,8 @@ contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
     /// @dev The maximum amount of tokens that can be minted.
     uint256 public immutable MAX_SUPPLY;
 
-    /// @dev The token ID counter. Starts at 1.
-    uint256 internal _tokenIdCounter = 1;
+    /// @dev The mint counter.
+    uint256 internal _mintCounter;
 
     /**
      * @param _name Name of the collection.
@@ -116,20 +116,14 @@ contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
     }
 
     /**
-     * @dev Mint the supplied number of tokens to the given address, up to the `MAX_SUPPLY` (which may be unlimited).
+     * @dev Mint the supplied token Id to the given address, up to the `MAX_SUPPLY` (which may be unlimited).
      * @param _to The address to mint tokens to.
-     * @param _amount How many tokens to mint.
+     * @param _tokenId Token ID to mint.
      */
-    function _baseMint(address _to, uint256 _amount) internal {
-        if (MAX_SUPPLY > 0 && (_tokenIdCounter + _amount) - 1 > MAX_SUPPLY) revert MaxMinted();
-        for (uint256 i = 0; i < _amount; ) {
-            _safeMint(_to, _tokenIdCounter);
-
-            unchecked {
-                _tokenIdCounter += 1;
-                i++;
-            }
-        }
+    function _baseMint(address _to, uint256 _tokenId) internal {
+        if (MAX_SUPPLY > 0 && _mintCounter >= MAX_SUPPLY) revert MaxMinted();
+        _safeMint(_to, _tokenId);
+        _mintCounter += 1;
     }
 
     function _beforeTokenTransfer(
