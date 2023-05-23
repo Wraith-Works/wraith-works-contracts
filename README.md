@@ -29,7 +29,7 @@ import "@wraith-works/contracts/tokens/ERC721/BaseERC721.sol";
 ### Example Contract
 
 ```solidity
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@wraith-works/contracts/tokens/ERC721/AirdropERC721.sol";
 import "@wraith-works/contracts/tokens/ERC721/RevealableERC721.sol";
@@ -86,7 +86,7 @@ BaseERC721 revealable contract test
   ✓ tokenURI returns URI for token when revealed
 
 ·--------------------------------------------|---------------------------|-------------|-----------------------------·
-|            Solc version: 0.8.20            ·  Optimizer enabled: true  ·  Runs: 200  ·  Block limit: 10000000 gas  │
+|            Solc version: 0.8.19            ·  Optimizer enabled: true  ·  Runs: 200  ·  Block limit: 10000000 gas  │
 ·············································|···························|·············|······························
 |  Methods                                   ·              175 gwei/gas               ·       0.84 usd/matic        │
 ·························|···················|·············|·············|·············|···············|··············

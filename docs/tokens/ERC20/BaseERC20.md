@@ -4,7 +4,7 @@ import "@wraith-works/contracts/tokens/ERC20/BaseERC20.sol";
 
 The `BaseERC20` contract extends the basic `ERC20` contract with ownership and pausability capabilities.
 
-[View Contract :fontawesome-brands-github:](https://github.com/Wraith-Works/wraith-works-contracts/blob/v0.2.1-beta/contracts/tokens/ERC20/Base20.sol){ .md-button target="_blank" }
+[View Contract :fontawesome-brands-github:](https://github.com/Wraith-Works/wraith-works-contracts/blob/main/contracts/tokens/ERC20/Base20.sol){ .md-button target="_blank" }
 
 ## Implementation
 
@@ -52,7 +52,7 @@ The `BaseERC20` contract requires the following variables to be passed into the 
 ## Example
 
 ```solidity
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@wraith-works/contracts/tokens/ERC20/BaseERC20.sol";
 
