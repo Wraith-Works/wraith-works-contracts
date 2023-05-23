@@ -4,7 +4,7 @@ import "@wraith-works/contracts/tokens/ERC721/AirdropERC721.sol";
 
 The `AirdropERC721` contract provides airdrop functionality to the [BaseERC721](/tokens/ERC721/BaseERC721) contract.
 
-[View Contract :fontawesome-brands-github:](https://github.com/Wraith-Works/wraith-works-contracts/blob/v0.2.0-beta/contracts/tokens/ERC721/AirdropERC721.sol){ .md-button target="_blank" }
+[View Contract :fontawesome-brands-github:](https://github.com/Wraith-Works/wraith-works-contracts/blob/main/contracts/tokens/ERC721/AirdropERC721.sol){ .md-button target="_blank" }
 
 ## Implementation
 
@@ -28,7 +28,7 @@ The `AirdropERC721` contract does not have any additional requirements except wh
 ## Example
 
 ```solidity
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@wraith-works/contracts/tokens/ERC721/AirdropERC721.sol";
 
