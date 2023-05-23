@@ -12,7 +12,7 @@ contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
     using Strings for uint256;
 
     /// @dev Token does not exist.
-    error DoesNotExist();
+    error DoesNotExist(uint256 tokenId);
     /// @dev Max mint limit reached.
     error MaxMinted();
 
@@ -110,7 +110,7 @@ contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
      * @return Returns the metadata URI for a specific token.
      */
     function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
-        if (!_exists(_tokenId)) revert DoesNotExist();
+        if (!_exists(_tokenId)) revert DoesNotExist(_tokenId);
         return
             bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, _tokenId.toString(), baseURIExtension)) : "";
     }
