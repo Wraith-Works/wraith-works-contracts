@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import "./IBaseERC20.sol";
+import "../../common/Errors.sol";
 
 /// @dev Basic ERC20 contract with owner and pausability.
 contract BaseERC20 is IBaseERC20, ERC20, Ownable, Pausable {
@@ -13,7 +14,7 @@ contract BaseERC20 is IBaseERC20, ERC20, Ownable, Pausable {
 
     /// @dev Modifier to restrict a function to only the owner or an authorized minter.
     modifier onlyAuthorizedMinter() {
-        if (msg.sender != owner() && !authorizedMinters[msg.sender]) revert Unauthorized();
+        if (msg.sender != owner() && !authorizedMinters[msg.sender]) revert Errors.Unauthorized(msg.sender);
         _;
     }
 
@@ -41,7 +42,7 @@ contract BaseERC20 is IBaseERC20, ERC20, Ownable, Pausable {
      * @param _authorized Whether to add or remove as authorized.
      */
     function setAuthorizedMinter(address _minter, bool _authorized) external override onlyOwner {
-        if (_minter == address(0)) revert InvalidAddress();
+        if (_minter == address(0)) revert Errors.ZeroAddress();
         authorizedMinters[_minter] = _authorized;
     }
 
