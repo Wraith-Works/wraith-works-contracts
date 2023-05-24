@@ -4,6 +4,6 @@
     "rules": {
       "max-line-length": ["off", 120],
       "prettier/prettier": "error",
-      "compiler-version": ["error","^0.8.20"]
+      "compiler-version": ["error","^0.8.19"]
     }
   }

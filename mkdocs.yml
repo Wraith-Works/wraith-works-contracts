@@ -128,7 +128,11 @@ nav:
   - Getting Started: index.md
   - Guides:
     - Tokens:
+      - ERC20:
+        - tokens/ERC20/BaseERC20.md
       - ERC721:
         - tokens/ERC721/AirdropERC721.md
+        - tokens/ERC721/AutoIncrementERC721.md
         - tokens/ERC721/BaseERC721.md
         - tokens/ERC721/RevealableERC721.md
+        - tokens/ERC721/StakingPoolsERC721.md

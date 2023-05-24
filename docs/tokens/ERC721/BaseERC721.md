@@ -4,7 +4,7 @@ import "@wraith-works/contracts/tokens/ERC721/BaseERC721.sol";
 
 The `BaseERC721` contract extends the basic `ERC721` contract with various extensions for controlling a max mint supply and setting royalities.
 
-[View Contract :fontawesome-brands-github:](https://github.com/Wraith-Works/wraith-works-contracts/blob/v0.2.0-beta/contracts/tokens/ERC721/BaseERC721.sol){ .md-button target="_blank" }
+[View Contract :fontawesome-brands-github:](https://github.com/Wraith-Works/wraith-works-contracts/blob/main/contracts/tokens/ERC721/BaseERC721.sol){ .md-button target="_blank" }
 
 ## Implementation
 
@@ -90,17 +90,17 @@ The `BaseERC721` contract requires the following variables to be passed into the
 
 ??? "_baseMint"
     ```solidity
-    function _baseMint(address _to, uint256 _amount) internal
+    function _baseMint(address _to, uint256 _tokenId) internal
     ```
 
-    - Mint the supplied number of tokens to the given address, up to the `MAX_SUPPLY` (which may be unlimited).
+    - Mint the supplied token Id to the given address, up to the `MAX_SUPPLY` (which may be unlimited).
     - `_to`: The address to mint tokens to.
-    - `_amount`: How many tokens to mint.
+    - `_tokenId`: Token ID to mint.
 
 ## Example
 
 ```solidity
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
 import "@wraith-works/contracts/tokens/ERC721/BaseERC721.sol";
 
