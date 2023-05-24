@@ -135,3 +135,4 @@ nav:
         - tokens/ERC721/AutoIncrementERC721.md
         - tokens/ERC721/BaseERC721.md
         - tokens/ERC721/RevealableERC721.md
+        - tokens/ERC721/StakingPoolsERC721.md
