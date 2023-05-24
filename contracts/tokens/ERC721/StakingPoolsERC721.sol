@@ -45,7 +45,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
 
     /**
      * @dev Set the address of the ERC721 token that can be staked in the contract.
-     * @param _stakingToken address of the ERC721 token.
+     * @param _stakingToken Address of the ERC721 token.
      */
     function setStakingToken(address _stakingToken) external override onlyOwner {
         if (_stakingToken == address(0)) revert Errors.ZeroAddress();
@@ -55,7 +55,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
 
     /**
      * @dev Set the address of the ERC20 token to be rewarded for staking.
-     * @param _rewardToken address of the ERC20 token.
+     * @param _rewardToken Address of the ERC20 token.
      */
     function setRewardToken(address _rewardToken) external override onlyOwner {
         if (_rewardToken == address(0)) revert Errors.ZeroAddress();
@@ -75,19 +75,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
         uint256 _lockPeriod,
         uint256 _reward
     ) external override onlyOwner returns (uint256) {
-        if (_lockPeriod == 0) revert InvalidLockPeriod();
-        stakingPools.push(
-            StakingPool({
-                active: false,
-                invalidated: false,
-                rewardWhileLocked: _rewardWhileLocked,
-                lockPeriod: _lockPeriod,
-                reward: _reward,
-                stakedCount: 0
-            })
-        );
-        emit StakingPoolAdded(stakingPools.length - 1);
-        return stakingPools.length - 1;
+        return _addStakingPool(_rewardWhileLocked, _lockPeriod, _reward);
     }
 
     /**
@@ -95,10 +83,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
      * @param _index The index of the staking pool.
      */
     function activateStakingPool(uint256 _index) external override onlyOwner {
-        if (_index >= stakingPools.length) revert Errors.InvalidIndex(_index);
-        if (stakingPools[_index].invalidated) revert StakingPoolInvalid(_index);
-        stakingPools[_index].active = true;
-        emit StakingPoolActivated(_index);
+        _activateStakingPool(_index);
     }
 
     /**
@@ -203,6 +188,40 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
         }
     }
 
+    /**
+     * @dev Add a staking pool. The pool starts disabled.
+     * @param _rewardWhileLocked Reward tokens can be claimed during the lock period.
+     * @param _lockPeriod The lock period in seconds that the token will be locked.
+     * @param _reward The amount of the ERC20 token to give at the end of the lock period.
+     * @return Returns the index of the staking pool.
+     */
+    function _addStakingPool(bool _rewardWhileLocked, uint256 _lockPeriod, uint256 _reward) internal returns (uint256) {
+        if (_lockPeriod == 0) revert InvalidLockPeriod();
+        stakingPools.push(
+            StakingPool({
+                active: false,
+                invalidated: false,
+                rewardWhileLocked: _rewardWhileLocked,
+                lockPeriod: _lockPeriod,
+                reward: _reward,
+                stakedCount: 0
+            })
+        );
+        emit StakingPoolAdded(stakingPools.length - 1);
+        return stakingPools.length - 1;
+    }
+
+    /**
+     * @dev Activate the given staking pool. Cannot activate an invalidated pool.
+     * @param _index The index of the staking pool.
+     */
+    function _activateStakingPool(uint256 _index) internal {
+        if (_index >= stakingPools.length) revert Errors.InvalidIndex(_index);
+        if (stakingPools[_index].invalidated) revert StakingPoolInvalid(_index);
+        stakingPools[_index].active = true;
+        emit StakingPoolActivated(_index);
+    }
+
     function _removeStakedToken(address _owner, uint256 _index) private {
         uint256 length = stakedTokens[_owner].length;
         if (_index >= length) revert Errors.InvalidIndex(_index);
@@ -238,7 +257,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
     /**
      * @dev Get balance of reward token available to claim by user.
      * @param _owner The owner to check balance for.
-     * @return The users reward balance.
+     * @return Returns the users reward balance.
      */
     function rewardsAvailable(address _owner) public view override returns (uint256) {
         uint256 reward = 0;
@@ -256,7 +275,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
 
     /**
      * @dev Get the number of staking pools available.
-     * @return The number of staking pools.
+     * @return Returns the number of staking pools.
      */
     function stakingPoolCount() public view override returns (uint256) {
         return stakingPools.length;
@@ -265,7 +284,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
     /**
      * @dev Get the number of staked tokens by owner.
      * @param _owner The owner to lookup for.
-     * @return The number of tokens staked.
+     * @return Returns the number of tokens staked.
      */
     function totalStakedForOwner(address _owner) public view override returns (uint256) {
         return stakedTokens[_owner].length;
@@ -275,7 +294,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
      * @dev Calculate the current rewards rate for a user over a given amount of time.
      * @param _owner The owner to calculate for.
      * @param _timeUnit The time in seconds to calculate rewards over. i.e. 86400 seconds to calculate rewards per day.
-     * @return The calculated rewards rate.
+     * @return Returns the calculated rewards rate.
      */
     function rewardsRatePerTimeUnit(address _owner, uint256 _timeUnit) public view override returns (uint256) {
         uint256 rewardsRate = 0;
