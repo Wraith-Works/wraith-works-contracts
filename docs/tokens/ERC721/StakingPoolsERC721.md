@@ -1,5 +1,5 @@
 ```solidity
-import "@wraith-works/contracts/tokens/ERC721/BaseERC721.sol";
+import "@wraith-works/contracts/tokens/ERC721/StakingPoolsERC721.sol";
 ```
 
 The `StakingPoolsERC721` provides staking pools for ERC721 tokens, earning a ERC20 reward token while staked.
