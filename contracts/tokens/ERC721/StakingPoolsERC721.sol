@@ -259,7 +259,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
      * @param _owner The owner to check balance for.
      * @return Returns the users reward balance.
      */
-    function rewardsAvailable(address _owner) public view override returns (uint256) {
+    function rewardsAvailable(address _owner) external view override returns (uint256) {
         uint256 reward = 0;
 
         uint256 length = stakedTokens[_owner].length;
@@ -277,7 +277,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
      * @dev Get the number of staking pools available.
      * @return Returns the number of staking pools.
      */
-    function stakingPoolCount() public view override returns (uint256) {
+    function stakingPoolCount() external view override returns (uint256) {
         return stakingPools.length;
     }
 
@@ -286,7 +286,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
      * @param _owner The owner to lookup for.
      * @return Returns the number of tokens staked.
      */
-    function totalStakedForOwner(address _owner) public view override returns (uint256) {
+    function totalStakedForOwner(address _owner) external view override returns (uint256) {
         return stakedTokens[_owner].length;
     }
 
@@ -296,7 +296,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
      * @param _timeUnit The time in seconds to calculate rewards over. i.e. 86400 seconds to calculate rewards per day.
      * @return Returns the calculated rewards rate.
      */
-    function rewardsRatePerTimeUnit(address _owner, uint256 _timeUnit) public view override returns (uint256) {
+    function rewardsRatePerTimeUnit(address _owner, uint256 _timeUnit) external view override returns (uint256) {
         uint256 rewardsRate = 0;
 
         uint256 length = stakedTokens[_owner].length;
@@ -322,7 +322,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
      * @param _owner The owner to pull list for.
      * @return Returns the length of the array, and the array of token Ids.
      */
-    function unlockableTokenIds(address _owner) public view override returns (uint256, uint256[] memory) {
+    function unlockableTokenIds(address _owner) external view override returns (uint256, uint256[] memory) {
         uint256 length = stakedTokens[_owner].length;
         uint256 unlockableCount = 0;
         uint256[] memory tokenIds = new uint256[](length);
@@ -340,6 +340,32 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
         }
 
         return (unlockableCount, tokenIds);
+    }
+
+    /**
+     * @dev Check if user has tokens locked in a pool.
+     * @param _owner The owners wallet address.
+     * @param _poolIndex The pool to check in.
+     * @return Returns true if the owner has tokens locked in the pool, false if not.
+     */
+    function isLockedInPool(address _owner, uint256 _poolIndex) external view override returns (bool) {
+        if (_poolIndex >= stakingPools.length) revert Errors.InvalidIndex(_poolIndex);
+        if (stakingPools[_poolIndex].invalidated) return false;
+
+        uint256 length = stakedTokens[_owner].length;
+        for (uint256 i = 0; i < length; ) {
+            if (
+                stakedTokens[_owner][i].poolIndex == _poolIndex && block.timestamp < stakedTokens[_owner][i].expiresAt
+            ) {
+                return true;
+            }
+
+            unchecked {
+                i++;
+            }
+        }
+
+        return false;
     }
 
     function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4) {

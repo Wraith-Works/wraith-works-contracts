@@ -89,8 +89,8 @@ describe('StakingPoolsERC721 contract test', function() {
         await stakingPoolsERC721Mock.unpause();
         await erc20Mock.setAuthorizedMinter(stakingPoolsERC721Mock.address, true);
         await erc721Mock.connect(user1).mint(2);
-
         await erc721Mock.connect(user1).setApprovalForAll(stakingPoolsERC721Mock.address, true);
+
         await stakingPoolsERC721Mock.connect(user1).stake(0, [1, 2]);
         expect(await erc721Mock.balanceOf(user1.address)).to.equal(0);
 
@@ -105,5 +105,26 @@ describe('StakingPoolsERC721 contract test', function() {
         await stakingPoolsERC721Mock.connect(user1).unstake();
         expect(await erc721Mock.balanceOf(user1.address)).to.equal(2);
         expect(await erc20Mock.balanceOf(user1.address)).to.equal(ethers.utils.parseEther('2'));
+    });
+
+    it('Test isLockedInPool', async function() {
+        const { erc721Mock, erc20Mock, stakingPoolsERC721Mock, user1 } = await loadFixture(deployStakingPoolsMockFixture);
+
+        await erc721Mock.unpause();
+        await erc20Mock.unpause();
+        await stakingPoolsERC721Mock.unpause();
+        await erc20Mock.setAuthorizedMinter(stakingPoolsERC721Mock.address, true);
+        await erc721Mock.connect(user1).mint(2);
+        await erc721Mock.connect(user1).setApprovalForAll(stakingPoolsERC721Mock.address, true);
+
+        expect(await stakingPoolsERC721Mock.isLockedInPool(user1.address, 0)).to.equal(false);
+        await stakingPoolsERC721Mock.connect(user1).stake(0, [1, 2]);
+        expect(await erc721Mock.balanceOf(user1.address)).to.equal(0);
+
+        expect(await stakingPoolsERC721Mock.isLockedInPool(user1.address, 0)).to.equal(true);
+        expect(await stakingPoolsERC721Mock.isLockedInPool(user1.address, 1)).to.equal(false);
+
+        await time.increase(86400);
+        expect(await stakingPoolsERC721Mock.isLockedInPool(user1.address, 0)).to.equal(false);
     });
 });
