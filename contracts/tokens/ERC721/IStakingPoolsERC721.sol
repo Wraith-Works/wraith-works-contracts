@@ -66,4 +66,6 @@ interface IStakingPoolsERC721 is IERC721Receiver {
     function rewardsRatePerTimeUnit(address _owner, uint256 _timeUnit) external view returns (uint256);
 
     function unlockableTokenIds(address _owner) external view returns (uint256, uint256[] memory);
+
+    function isLockedInPool(address _owner, uint256 _poolIndex) external view returns (bool);
 }

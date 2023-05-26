@@ -134,7 +134,7 @@ The `StakingPoolsERC721` contract requires the following variables to be passed 
 
 ??? "rewardsAvailable"
     ```solidity
-    function rewardsAvailable(address _owner) public view returns (uint256)
+    function rewardsAvailable(address _owner) external view returns (uint256)
     ```
 
     - Get balance of reward token available to claim by user.
@@ -143,7 +143,7 @@ The `StakingPoolsERC721` contract requires the following variables to be passed 
 
 ??? "stakingPoolCount"
     ```solidity
-    function stakingPoolCount() public view returns (uint256)
+    function stakingPoolCount() external view returns (uint256)
     ```
 
     - Get the number of staking pools available.
@@ -151,7 +151,7 @@ The `StakingPoolsERC721` contract requires the following variables to be passed 
 
 ??? "totalStakedForOwner"
     ```solidity
-    function totalStakedForOwner(address _owner) public view returns (uint256)
+    function totalStakedForOwner(address _owner) external view returns (uint256)
     ```
 
     - Get the number of staked tokens by owner.
@@ -160,7 +160,7 @@ The `StakingPoolsERC721` contract requires the following variables to be passed 
 
 ??? "rewardsRatePerTimeUnit"
     ```solidity
-    function rewardsRatePerTimeUnit(address _owner, uint256 _timeUnit) public view returns (uint256)
+    function rewardsRatePerTimeUnit(address _owner, uint256 _timeUnit) external view returns (uint256)
     ```
 
     - Calculate the current rewards rate for a user over a given amount of time.
@@ -170,12 +170,22 @@ The `StakingPoolsERC721` contract requires the following variables to be passed 
 
 ??? "unlockableTokenIds"
     ```solidity
-    function unlockableTokenIds(address _owner) public view returns (uint256, uint256[] memory)
+    function unlockableTokenIds(address _owner) external view returns (uint256, uint256[] memory)
     ```
 
     - Get a list of unlockable (unstakable) token Ids for a user.
     - `_owner`: The owner to pull list for.
     - Returns the length of the array, and the array of token Ids.
+
+??? "isLockedInPool"
+    ```solidity
+    function isLockedInPool(address _owner, uint256 _poolIndex) external view returns (bool)
+    ```
+
+    - Check if user has tokens locked in a pool.
+    - `_owner`: The owners wallet address.
+    - `_poolIndex`: The pool to check in.
+    - Returns true if the owner has tokens locked in the pool, false if not.
 
 ## Example
 
