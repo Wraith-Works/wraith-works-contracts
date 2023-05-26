@@ -42,6 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          ref: main
           token: ${{ secrets.GH_ORG_PAT }}
       - uses: actions/setup-node@v3
         with:
@@ -66,6 +67,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          ref: main
       - uses: actions/setup-node@v3
         with:
           node-version: '16.4.2'
