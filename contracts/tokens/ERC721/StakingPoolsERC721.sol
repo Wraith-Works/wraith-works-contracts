@@ -249,11 +249,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
     function _calculateExtraReward(address _owner, uint256 _tokenId, uint256 _reward) private view returns (uint256) {
         uint256 reward = _reward;
         if (address(stakingRewardCalculator) != address(0)) {
-            reward = stakingRewardCalculator.calculateStakingReward(
-                _owner,
-                _tokenId,
-                _reward
-            );
+            reward = stakingRewardCalculator.calculateStakingReward(_owner, _tokenId, _reward);
         }
         return reward;
     }
@@ -275,8 +271,7 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
         }
 
         uint256 start = stakedTokenInfo.expiresAt - stakingPool.lockPeriod;
-        return
-            (((block.timestamp - start) * reward) / stakingPool.lockPeriod) - stakedTokenInfo.rewardClaimed;
+        return (((block.timestamp - start) * reward) / stakingPool.lockPeriod) - stakedTokenInfo.rewardClaimed;
     }
 
     /**
