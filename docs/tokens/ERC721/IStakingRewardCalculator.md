@@ -8,7 +8,7 @@ The `IStakingRewardCalculator` provides an interface that can be implemented for
 
 ## Usage
 
-??? "pause"
+??? "calculateStakingReward"
     ```solidity
     function calculateStakingReward(address _owner, uint256 _tokenId, uint256 _reward) external view returns (uint256);
     ```
