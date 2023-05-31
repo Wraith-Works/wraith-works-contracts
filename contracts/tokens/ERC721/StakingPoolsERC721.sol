@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 
 import "./IStakingPoolsERC721.sol";
+import "./IStakingRewardCalculator.sol";
 import "../ERC20/IBaseERC20.sol";
 import "../../common/Errors.sol";
 
@@ -16,6 +17,8 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
     IERC721 public stakingToken;
     /// @dev The address of the ERC20 token to be rewarded for staking.
     IBaseERC20 public rewardToken;
+    /// @dev The address of the IStakingRewardCalculator to calculate any extra rewards.
+    IStakingRewardCalculator public stakingRewardCalculator;
     /// @dev The list of staking pools.
     StakingPool[] public stakingPools;
     /// @dev List of token staking info by owner address.
@@ -61,6 +64,15 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
         if (_rewardToken == address(0)) revert Errors.ZeroAddress();
         rewardToken = IBaseERC20(_rewardToken);
         emit RewardTokenSet(_rewardToken);
+    }
+
+    /**
+     * @dev Set the address of the IStakingRewardCalculator contract.
+     * @param _stakingRewardCalculator Address of the contract.
+     */
+    function setStakingRewardCalculator(address _stakingRewardCalculator) external override onlyOwner {
+        stakingRewardCalculator = IStakingRewardCalculator(_stakingRewardCalculator);
+        emit StakingRewardCalculatorSet(_stakingRewardCalculator);
     }
 
     /**
@@ -234,24 +246,37 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
         stakedTokens[_owner].pop();
     }
 
+    function _calculateExtraReward(address _owner, uint256 _tokenId, uint256 _reward) private view returns (uint256) {
+        uint256 reward = _reward;
+        if (address(stakingRewardCalculator) != address(0)) {
+            reward = stakingRewardCalculator.calculateStakingReward(
+                _owner,
+                _tokenId,
+                _reward
+            );
+        }
+        return reward;
+    }
+
     function _calculateReward(address _owner, uint256 _index, bool _unstaking) private view returns (uint256) {
         uint256 length = stakedTokens[_owner].length;
         if (_index >= length) revert Errors.InvalidIndex(_index);
 
         StakedTokenInfo storage stakedTokenInfo = stakedTokens[_owner][_index];
         StakingPool storage stakingPool = stakingPools[stakedTokenInfo.poolIndex];
+        uint256 reward = _calculateExtraReward(_owner, stakedTokenInfo.tokenId, stakingPool.reward);
 
         if (stakingPool.invalidated) {
             return 0;
         } else if (block.timestamp >= stakedTokenInfo.expiresAt) {
-            return stakingPool.reward - stakedTokenInfo.rewardClaimed;
+            return reward - stakedTokenInfo.rewardClaimed;
         } else if (!_unstaking && !stakingPool.rewardWhileLocked) {
             return 0;
         }
 
         uint256 start = stakedTokenInfo.expiresAt - stakingPool.lockPeriod;
         return
-            (((block.timestamp - start) * stakingPool.reward) / stakingPool.lockPeriod) - stakedTokenInfo.rewardClaimed;
+            (((block.timestamp - start) * reward) / stakingPool.lockPeriod) - stakedTokenInfo.rewardClaimed;
     }
 
     /**
@@ -304,8 +329,9 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
             StakedTokenInfo storage stakedTokenInfo = stakedTokens[_owner][i];
             if (block.timestamp < stakedTokenInfo.expiresAt) {
                 StakingPool storage stakingPool = stakingPools[stakedTokenInfo.poolIndex];
+                uint256 reward = _calculateExtraReward(_owner, stakedTokenInfo.tokenId, stakingPool.reward);
                 if (!stakingPool.invalidated) {
-                    rewardsRate += stakingPool.reward / stakingPool.lockPeriod;
+                    rewardsRate += reward / stakingPool.lockPeriod;
                 }
             }
 

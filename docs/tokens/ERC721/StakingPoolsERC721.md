@@ -47,6 +47,14 @@ The `StakingPoolsERC721` contract requires the following variables to be passed 
     - Set the address of the ERC20 token to be rewarded for staking.
     - `_receiver`: Address of the ERC20 token.
 
+??? "setStakingRewardCalculator"
+    ```solidity
+    function setStakingRewardCalculator(address _stakingRewardCalculator) external onlyOwner
+    ```
+
+    - Set the address of the [IStakingRewardCalculator](/tokens/ERC721/IStakingRewardCalculator) contract.
+    - `_stakingRewardCalculator`: Address of the contract.
+
 ??? "addStakingPool"
     ```solidity
     function addStakingPool(
