@@ -11,6 +11,7 @@ interface IStakingPoolsERC721 is IERC721Receiver {
 
     event StakingTokenSet(address indexed stakingToken);
     event RewardTokenSet(address indexed rewardToken);
+    event StakingRewardCalculatorSet(address indexed stakingRewardCalculator);
     event StakingPoolAdded(uint256 index);
     event StakingPoolActivated(uint256 index);
     event StakingPoolDeactivated(uint256 index);
@@ -42,6 +43,8 @@ interface IStakingPoolsERC721 is IERC721Receiver {
     function setStakingToken(address _stakingToken) external;
 
     function setRewardToken(address _rewardToken) external;
+
+    function setStakingRewardCalculator(address _stakingRewardCalculator) external;
 
     function addStakingPool(bool _rewardWhileLocked, uint256 _lockPeriod, uint256 _reward) external returns (uint256);
 
