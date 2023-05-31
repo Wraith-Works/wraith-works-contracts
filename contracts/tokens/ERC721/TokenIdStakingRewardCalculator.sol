@@ -63,10 +63,14 @@ abstract contract TokenIdStakingRewardCalculator is IStakingRewardCalculator, Ow
      * @param _reward The base reward.
      * @return Returns the new reward.
      */
-    function calculateStakingReward(address, uint256 _tokenId, uint256 _reward) external view override returns (uint256) {
+    function calculateStakingReward(
+        address,
+        uint256 _tokenId,
+        uint256 _reward
+    ) external view override returns (uint256) {
         if (tokenIdRewardMultiplier[_tokenId] == 0) {
             return _reward;
         }
-        return (_reward * tokenIdRewardMultiplier[_tokenId]) / (1 * 10**decimals);
+        return (_reward * tokenIdRewardMultiplier[_tokenId]) / (1 * 10 ** decimals);
     }
 }
