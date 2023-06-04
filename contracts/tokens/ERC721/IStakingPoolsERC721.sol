@@ -64,11 +64,13 @@ interface IStakingPoolsERC721 is IERC721Receiver {
 
     function stakingPoolCount() external view returns (uint256);
 
-    function totalStakedForOwner(address _owner) external view returns (uint256);
+    function getStakedTokenIds(address _owner) external view returns (uint256[] memory);
+
+    function getLockedTokenIds(address _owner, uint256 _poolIndex) external view returns (uint256, uint256[] memory);
+
+    function getUnlockedTokenIds(address _owner) external view returns (uint256, uint256[] memory);
+
+    function getStakedTokenBalance(address _owner) external view returns (uint256);
 
     function rewardsRatePerTimeUnit(address _owner, uint256 _timeUnit) external view returns (uint256);
-
-    function unlockableTokenIds(address _owner) external view returns (uint256, uint256[] memory);
-
-    function isLockedInPool(address _owner, uint256 _poolIndex) external view returns (bool);
 }

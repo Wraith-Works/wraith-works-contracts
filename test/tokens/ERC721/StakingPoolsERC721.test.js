@@ -89,7 +89,7 @@ describe('StakingPoolsERC721 contract test', function() {
         expect(await erc721Mock.balanceOf(user1.address)).to.equal(2);
         await stakingPoolsERC721Mock.connect(user1).stake(0, [1, 2]);
         expect(await erc721Mock.balanceOf(user1.address)).to.equal(0);
-        expect(await stakingPoolsERC721Mock.totalStakedForOwner(user1.address)).to.equal(2);
+        expect(await stakingPoolsERC721Mock.getStakedTokenBalance(user1.address)).to.equal(2);
     });
 
     it('User can claim and unstake', async function() {
@@ -114,14 +114,41 @@ describe('StakingPoolsERC721 contract test', function() {
         expect(await erc20Mock.balanceOf(user1.address)).to.greaterThanOrEqual(ethers.utils.parseEther('1.25'));
 
         await time.increase(86400 / 2);
-        const unlockableTokenIds = await stakingPoolsERC721Mock.unlockableTokenIds(user1.address);
-        expect(unlockableTokenIds[0]).to.equal(2);
+        const unlockedTokenIds = await stakingPoolsERC721Mock.getUnlockedTokenIds(user1.address);
+        expect(unlockedTokenIds[0]).to.equal(2);
         await stakingPoolsERC721Mock.connect(user1).unstake();
         expect(await erc721Mock.balanceOf(user1.address)).to.equal(2);
         expect(await erc20Mock.balanceOf(user1.address)).to.equal(ethers.utils.parseEther('2.5'));
     });
 
-    it('Test isLockedInPool', async function() {
+    it('Test getStakedTokenIds', async function() {
+        const { erc721Mock, erc20Mock, stakingPoolsERC721Mock, user1 } = await loadFixture(deployStakingPoolsMockFixture);
+
+        await erc721Mock.unpause();
+        await erc20Mock.unpause();
+        await stakingPoolsERC721Mock.unpause();
+        await erc20Mock.setAuthorizedMinter(stakingPoolsERC721Mock.address, true);
+        await erc721Mock.connect(user1).mint(5);
+        await erc721Mock.connect(user1).setApprovalForAll(stakingPoolsERC721Mock.address, true);
+
+        let lockedTokenIds = await stakingPoolsERC721Mock.getLockedTokenIds(user1.address, 0);
+        expect(lockedTokenIds[0]).to.equal(0);
+        await stakingPoolsERC721Mock.connect(user1).stake(0, [1, 2, 3]);
+        expect(await erc721Mock.balanceOf(user1.address)).to.equal(2);
+
+        lockedTokenIds = await stakingPoolsERC721Mock.getLockedTokenIds(user1.address, 0);
+        expect(lockedTokenIds[0]).to.equal(3);
+        let stakedTokenIds = await stakingPoolsERC721Mock.getStakedTokenIds(user1.address);
+        expect(stakedTokenIds.map((item) => { return item.toNumber(); })).to.eql([1, 2, 3]);
+
+        await time.increase(86400);
+        const unlockedTokenIds = await stakingPoolsERC721Mock.getUnlockedTokenIds(user1.address);
+        expect(unlockedTokenIds[0]).to.equal(3);
+        stakedTokenIds = await stakingPoolsERC721Mock.getStakedTokenIds(user1.address);
+        expect(stakedTokenIds.map((item) => { return item.toNumber(); })).to.eql([1, 2, 3]);
+    });
+
+    it('Test getLockedTokenIds/getUnlockedTokenIds', async function() {
         const { erc721Mock, erc20Mock, stakingPoolsERC721Mock, user1 } = await loadFixture(deployStakingPoolsMockFixture);
 
         await erc721Mock.unpause();
@@ -131,14 +158,18 @@ describe('StakingPoolsERC721 contract test', function() {
         await erc721Mock.connect(user1).mint(2);
         await erc721Mock.connect(user1).setApprovalForAll(stakingPoolsERC721Mock.address, true);
 
-        expect(await stakingPoolsERC721Mock.isLockedInPool(user1.address, 0)).to.equal(false);
+        let lockedTokenIds = await stakingPoolsERC721Mock.getLockedTokenIds(user1.address, 0);
+        expect(lockedTokenIds[0]).to.equal(0);
         await stakingPoolsERC721Mock.connect(user1).stake(0, [1, 2]);
         expect(await erc721Mock.balanceOf(user1.address)).to.equal(0);
 
-        expect(await stakingPoolsERC721Mock.isLockedInPool(user1.address, 0)).to.equal(true);
-        expect(await stakingPoolsERC721Mock.isLockedInPool(user1.address, 1)).to.equal(false);
+        lockedTokenIds = await stakingPoolsERC721Mock.getLockedTokenIds(user1.address, 0);
+        expect(lockedTokenIds[0]).to.equal(2);
+        lockedTokenIds = await stakingPoolsERC721Mock.getLockedTokenIds(user1.address, 1);
+        expect(lockedTokenIds[0]).to.equal(0);
 
         await time.increase(86400);
-        expect(await stakingPoolsERC721Mock.isLockedInPool(user1.address, 0)).to.equal(false);
+        const unlockedTokenIds = await stakingPoolsERC721Mock.getUnlockedTokenIds(user1.address);
+        expect(unlockedTokenIds[0]).to.equal(2);
     });
 });

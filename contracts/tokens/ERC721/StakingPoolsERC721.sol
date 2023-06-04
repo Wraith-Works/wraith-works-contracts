@@ -302,11 +302,83 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
     }
 
     /**
+     * @dev Get a list of all staked token Ids for an owner.
+     * @param _owner The owners address.
+     * @return Returns a list of token Ids.
+     */
+    function getStakedTokenIds(address _owner) external view override returns (uint256[] memory) {
+        uint256 balance = stakedTokens[_owner].length;
+        uint256[] memory tokenIds = new uint256[](balance);
+        for (uint256 i = 0; i < balance; ) {
+            tokenIds[i] = stakedTokens[_owner][i].tokenId;
+
+            unchecked {
+                i++;
+            }
+        }
+        return tokenIds;
+    }
+
+    /**
+     * @dev Get a list of all locked token Ids for an owner in a staking pool.
+     * @param _owner The owners address.
+     * @param _poolIndex The index of the staking pool.
+     * @return Returns the count of token Ids, and a list of token Ids.
+     */
+    function getLockedTokenIds(
+        address _owner,
+        uint256 _poolIndex
+    ) external view override returns (uint256, uint256[] memory) {
+        if (_poolIndex >= stakingPools.length) revert Errors.InvalidIndex(_poolIndex);
+        if (stakingPools[_poolIndex].invalidated) return (0, new uint256[](0));
+
+        uint256 balance = stakedTokens[_owner].length;
+        uint256[] memory tokenIds = new uint256[](balance);
+        uint256 tokenIdCount = 0;
+        for (uint256 i = 0; i < balance; ) {
+            StakedTokenInfo memory stakedTokenInfo = stakedTokens[_owner][i];
+            if (stakedTokenInfo.poolIndex == _poolIndex && block.timestamp < stakedTokenInfo.expiresAt) {
+                tokenIds[tokenIdCount] = stakedTokenInfo.tokenId;
+                tokenIdCount += 1;
+            }
+
+            unchecked {
+                i++;
+            }
+        }
+
+        return (tokenIdCount, tokenIds);
+    }
+
+    /**
+     * @dev Get a list of all unlocked token Ids for an owner.
+     * @param _owner The owners address.
+     * @return Returns the count of token Ids, and a list of token Ids.
+     */
+    function getUnlockedTokenIds(address _owner) external view override returns (uint256, uint256[] memory) {
+        uint256 balance = stakedTokens[_owner].length;
+        uint256[] memory tokenIds = new uint256[](balance);
+        uint256 tokenIdCount = 0;
+        for (uint256 i = 0; i < balance; ) {
+            StakedTokenInfo memory stakedTokenInfo = stakedTokens[_owner][i];
+            if (block.timestamp >= stakedTokenInfo.expiresAt) {
+                tokenIds[tokenIdCount] = stakedTokenInfo.tokenId;
+                tokenIdCount += 1;
+            }
+
+            unchecked {
+                i++;
+            }
+        }
+        return (tokenIdCount, tokenIds);
+    }
+
+    /**
      * @dev Get the number of staked tokens by owner.
-     * @param _owner The owner to lookup for.
+     * @param _owner The owners address.
      * @return Returns the number of tokens staked.
      */
-    function totalStakedForOwner(address _owner) external view override returns (uint256) {
+    function getStakedTokenBalance(address _owner) external view override returns (uint256) {
         return stakedTokens[_owner].length;
     }
 
@@ -336,57 +408,6 @@ contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, Reentranc
         }
 
         return rewardsRate * _timeUnit;
-    }
-
-    /**
-     * @dev Get a list of unlockable (unstakable) token Ids for a user.
-     * @param _owner The owner to pull list for.
-     * @return Returns the length of the array, and the array of token Ids.
-     */
-    function unlockableTokenIds(address _owner) external view override returns (uint256, uint256[] memory) {
-        uint256 length = stakedTokens[_owner].length;
-        uint256 unlockableCount = 0;
-        uint256[] memory tokenIds = new uint256[](length);
-
-        for (uint256 i = 0; i < length; ) {
-            StakingPool storage stakingPool = stakingPools[stakedTokens[_owner][i].poolIndex];
-            if (stakingPool.invalidated || block.timestamp >= stakedTokens[_owner][i].expiresAt) {
-                tokenIds[unlockableCount] = stakedTokens[_owner][i].tokenId;
-                unlockableCount += 1;
-            }
-
-            unchecked {
-                i++;
-            }
-        }
-
-        return (unlockableCount, tokenIds);
-    }
-
-    /**
-     * @dev Check if user has tokens locked in a pool.
-     * @param _owner The owners wallet address.
-     * @param _poolIndex The pool to check in.
-     * @return Returns true if the owner has tokens locked in the pool, false if not.
-     */
-    function isLockedInPool(address _owner, uint256 _poolIndex) external view override returns (bool) {
-        if (_poolIndex >= stakingPools.length) revert Errors.InvalidIndex(_poolIndex);
-        if (stakingPools[_poolIndex].invalidated) return false;
-
-        uint256 length = stakedTokens[_owner].length;
-        for (uint256 i = 0; i < length; ) {
-            if (
-                stakedTokens[_owner][i].poolIndex == _poolIndex && block.timestamp < stakedTokens[_owner][i].expiresAt
-            ) {
-                return true;
-            }
-
-            unchecked {
-                i++;
-            }
-        }
-
-        return false;
     }
 
     function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4) {
