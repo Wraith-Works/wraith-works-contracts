@@ -157,13 +157,41 @@ The `StakingPoolsERC721` contract requires the following variables to be passed 
     - Get the number of staking pools available.
     - Returns the number of staking pools.
 
-??? "totalStakedForOwner"
+??? "getStakedTokenIds"
     ```solidity
-    function totalStakedForOwner(address _owner) external view returns (uint256)
+    function getStakedTokenIds(address _owner) external view returns (uint256[] memory)
+    ```
+
+    - Get a list of all staked token Ids for an owner.
+    - `_owner`: The owners address.
+    - Returns a list of token Ids.
+
+??? "getLockedTokenIds"
+    ```solidity
+    function getLockedTokenIds(address _owner, uint256 _poolIndex) external view returns (uint256, uint256[] memory)
+    ```
+
+    - Get a list of all locked token Ids for an owner in a staking pool.
+    - `_owner`: The owners address.
+    - `_poolIndex`: The index of the staking pool.
+    - Returns the count of token Ids, and a list of token Ids.
+
+??? "getUnlockedTokenIds"
+    ```solidity
+    function getUnlockedTokenIds(address _owner) external view returns (uint256, uint256[] memory)
+    ```
+
+    - Get a list of all unlocked token Ids for an owner.
+    - `_owner`: The owners address.
+    - Returns the count of token Ids, and a list of token Ids.
+
+??? "getStakedTokenBalance"
+    ```solidity
+    function getStakedTokenBalance(address _owner) external view returns (uint256)
     ```
 
     - Get the number of staked tokens by owner.
-    - `_owner`: The owner to lookup for.
+    - `_owner`: The owners address.
     - Returns the number of tokens staked.
 
 ??? "rewardsRatePerTimeUnit"
@@ -175,25 +203,6 @@ The `StakingPoolsERC721` contract requires the following variables to be passed 
     - `_owner`: The owner to calculate for.
     - `_timeUnit`: The time in seconds to calculate rewards over. i.e. 86400 seconds to calculate rewards per day.
     - Returns the calculated rewards rate.
-
-??? "unlockableTokenIds"
-    ```solidity
-    function unlockableTokenIds(address _owner) external view returns (uint256, uint256[] memory)
-    ```
-
-    - Get a list of unlockable (unstakable) token Ids for a user.
-    - `_owner`: The owner to pull list for.
-    - Returns the length of the array, and the array of token Ids.
-
-??? "isLockedInPool"
-    ```solidity
-    function isLockedInPool(address _owner, uint256 _poolIndex) external view returns (bool)
-    ```
-
-    - Check if user has tokens locked in a pool.
-    - `_owner`: The owners wallet address.
-    - `_poolIndex`: The pool to check in.
-    - Returns true if the owner has tokens locked in the pool, false if not.
 
 ## Example
 
