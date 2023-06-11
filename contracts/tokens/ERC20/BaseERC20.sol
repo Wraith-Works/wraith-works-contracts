@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
@@ -9,7 +9,7 @@ import "./IBaseERC20.sol";
 import "../../common/Errors.sol";
 
 /// @dev Basic ERC20 contract with owner, pausability, and authorized minting.
-contract BaseERC20 is IBaseERC20, ERC20, Ownable, Pausable {
+contract BaseERC20 is IBaseERC20, ERC20, Ownable2Step, Pausable {
     mapping(address => bool) public authorizedMinters;
 
     /// @dev Modifier to restrict a function to only the owner or an authorized minter.
