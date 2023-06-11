@@ -121,12 +121,17 @@ abstract contract MintableERC721 is IMintableERC721, AutoIncrementERC721 {
             mintStages[activeMintStage].maxPerWallet
         ) return 0;
 
-        return
-            Math.min(
-                mintStages[activeMintStage].maxPerWallet -
-                    ownerMintCounter[mintStages[activeMintStage].ownerMintCounterIdx][_owner],
-                mintStages[activeMintStage].maxPerMint
-            );
+        uint256 maxAmount = Math.min(
+            mintStages[activeMintStage].maxPerWallet -
+                ownerMintCounter[mintStages[activeMintStage].ownerMintCounterIdx][_owner],
+            mintStages[activeMintStage].maxPerMint
+        );
+
+        if (MAX_SUPPLY > 0) {
+            maxAmount = Math.min(maxAmount, MAX_SUPPLY - _mintCounter);
+        }
+
+        return maxAmount;
     }
 
     function mintPriceForActiveStage(
