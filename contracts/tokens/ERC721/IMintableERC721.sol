@@ -8,6 +8,7 @@ interface IMintableERC721 {
 
     error MintInactive();
     error NoBalance();
+    error WithdrawFailed();
 
     struct MintStage {
         uint256 price;
@@ -30,13 +31,17 @@ interface IMintableERC721 {
 
     function updateMintStageMaxPer(uint256 _idx, uint256 _maxPerWallet, uint256 _maxPerMint) external;
 
-    function updateMintStageMerkelRoot(uint256 _idx, bytes32 _merkleRoot) external;
+    function updateMintStageMerkleRoot(uint256 _idx, bytes32 _merkleRoot) external;
 
     function setMintActive(bool _mintActive) external;
 
     function setActiveMintStage(uint256 _idx) external;
 
     function setPaymentToken(address _paymentToken) external;
+
+    function withdrawAll() external;
+
+    function withdrawAll(address _tokenAddress) external;
 
     function maximumAmountForOwner(address _owner, bytes32[] calldata _merkleProof) external view returns (uint256);
 
