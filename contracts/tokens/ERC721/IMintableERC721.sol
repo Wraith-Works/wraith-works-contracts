@@ -39,9 +39,9 @@ interface IMintableERC721 {
 
     function setPaymentToken(address _paymentToken) external;
 
-    function withdrawAll() external;
+    function withdrawAllNative() external;
 
-    function withdrawAll(address _tokenAddress) external;
+    function withdrawAllTokens(address _tokenAddress) external;
 
     function maximumAmountForOwner(address _owner, bytes32[] calldata _merkleProof) external view returns (uint256);
 

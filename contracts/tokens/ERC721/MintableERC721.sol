@@ -143,7 +143,7 @@ abstract contract MintableERC721 is IMintableERC721, AutoIncrementERC721 {
     }
 
     /// @dev Withdraw all native tokens to the owner
-    function withdrawAll() external override onlyOwner {
+    function withdrawAllNative() external override onlyOwner {
         uint256 balance = address(this).balance;
         if (balance == 0) revert NoBalance();
         (bool success, ) = owner().call{value: balance}("");
@@ -154,7 +154,7 @@ abstract contract MintableERC721 is IMintableERC721, AutoIncrementERC721 {
      * @dev Withdraws all specified tokens to the owner
      * @param _tokenAddress Address of the token.
      */
-    function withdrawAll(address _tokenAddress) external override onlyOwner {
+    function withdrawAllTokens(address _tokenAddress) external override onlyOwner {
         uint256 balance = IERC20(_tokenAddress).balanceOf(address(this));
         if (balance == 0) revert NoBalance();
         IERC20(_tokenAddress).transfer(owner(), balance);
