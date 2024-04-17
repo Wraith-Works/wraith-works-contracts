@@ -122,8 +122,8 @@ abstract contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable2Step, Pausabl
      */
     function _baseMint(address _to, uint256 _tokenId) internal {
         if (MAX_SUPPLY > 0 && mintCounter >= MAX_SUPPLY) revert MaxMinted();
-        _safeMint(_to, _tokenId);
         mintCounter += 1;
+        _safeMint(_to, _tokenId);
     }
 
     function _beforeTokenTransfer(
