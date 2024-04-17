@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
@@ -12,7 +12,7 @@ import "../ERC20/IBaseERC20.sol";
 import "../../common/Errors.sol";
 
 /// @dev Staking pools for ERC721 tokens, earning a ERC20 reward token.
-contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable, Pausable, ReentrancyGuard {
+contract StakingPoolsERC721 is IStakingPoolsERC721, Ownable2Step, Pausable, ReentrancyGuard {
     /// @dev The address of the ERC721 token that can be staked in the contract.
     IERC721 public stakingToken;
     /// @dev The address of the ERC20 token to be rewarded for staking.

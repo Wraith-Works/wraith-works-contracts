@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 
 import "./IStakingRewardCalculator.sol";
 import "../../common/Errors.sol";
 
 /// @dev Staking reward calculator based on a per token basis.
-abstract contract TokenIdStakingRewardCalculator is IStakingRewardCalculator, Ownable, Pausable {
+abstract contract TokenIdStakingRewardCalculator is IStakingRewardCalculator, Ownable2Step, Pausable {
     event TokenMultiplierSet(uint256 indexed tokenId, uint256 multiplier);
 
     /// @dev The reward multiplier by token ID.

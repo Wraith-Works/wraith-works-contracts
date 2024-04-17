@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 
 /// @dev Basic ERC721 contract with various extensions for controlling max mint supply and royalities.
-abstract contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
+abstract contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable2Step, Pausable {
     using Strings for uint256;
 
     /// @dev Token does not exist.
@@ -24,7 +24,7 @@ abstract contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
     uint256 public immutable MAX_SUPPLY;
 
     /// @dev The mint counter.
-    uint256 internal _mintCounter;
+    uint256 public mintCounter;
 
     /**
      * @param _name Name of the collection.
@@ -121,9 +121,9 @@ abstract contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable, Pausable {
      * @param _tokenId Token ID to mint.
      */
     function _baseMint(address _to, uint256 _tokenId) internal {
-        if (MAX_SUPPLY > 0 && _mintCounter >= MAX_SUPPLY) revert MaxMinted();
+        if (MAX_SUPPLY > 0 && mintCounter >= MAX_SUPPLY) revert MaxMinted();
         _safeMint(_to, _tokenId);
-        _mintCounter += 1;
+        mintCounter += 1;
     }
 
     function _beforeTokenTransfer(
