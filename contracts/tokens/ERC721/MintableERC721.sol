@@ -3,7 +3,6 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
-import "@openzeppelin/contracts/utils/math/Math.sol";
 
 import "../../common/Errors.sol";
 import "./AutoIncrementERC721.sol";
@@ -13,44 +12,40 @@ import "./IMintableERC721.sol";
 abstract contract MintableERC721 is IMintableERC721, AutoIncrementERC721 {
     /// @dev List of mint stages.
     MintStage[] public mintStages;
-    /// @dev Mint counter by owner for stages.
-    mapping(uint256 => mapping(address => uint256)) public ownerMintCounter;
-    /// @dev Next index of mint counter mapping.
-    uint256 private nextOwnerMintCounter;
+    /// @dev Mint counter by owner.
+    mapping(address => uint256) public ownerMintCounter;
     /// @dev Flag indicating whether minting is active.
     bool public mintActive;
     /// @dev Index of the current active mint stage.
     uint256 public activeMintStage;
+    /// @dev Maximum amount a user can mint per call to the mint function.
+    uint256 public maxPerMint;
+    /// @dev Maximum amount a user can mint total. Setting this will override the mint stage total.
+    uint256 public maxPerWallet;
 
     /// @dev Utilizing native payments, or token payments.
     bool public nativePayment = true;
     /// @dev The payment token address, if not native.
     address public paymentToken;
 
+    /// @param _maxPerMint Maximum amount a user can mint per call to the mint function.
+    constructor(uint256 _maxPerMint) {
+        maxPerMint = _maxPerMint;
+    }
+
     /**
      * @dev Add a new mint stage.
      * @param _price The price of this mint stage.
      * @param _maxPerWallet Maximum mints per wallet.
-     * @param _maxPerMint Maximum mints per mint function call.
      * @param _merkleRoot The merkle root for this mint stage. Set to 0x0 for an open mint.
      * @return Returns the index of the added mint stage.
      */
     function addMintStage(
         uint256 _price,
         uint256 _maxPerWallet,
-        uint256 _maxPerMint,
         bytes32 _merkleRoot
     ) public override onlyOwner returns (uint256) {
-        mintStages.push(
-            MintStage({
-                price: _price,
-                maxPerWallet: _maxPerWallet,
-                maxPerMint: _maxPerMint,
-                merkleRoot: _merkleRoot,
-                ownerMintCounterIdx: nextOwnerMintCounter
-            })
-        );
-        nextOwnerMintCounter += 1;
+        mintStages.push(MintStage({price: _price, maxPerWallet: _maxPerWallet, merkleRoot: _merkleRoot}));
         return mintStages.length - 1;
     }
 
@@ -87,16 +82,14 @@ abstract contract MintableERC721 is IMintableERC721, AutoIncrementERC721 {
     }
 
     /**
-     * @dev Update the mint stage max per wallet, and max per mint.
+     * @dev Update the mint stage max per wallet.
      * @param _idx The index of the mint stage.
      * @param _maxPerWallet Max mints per wallet.
-     * @param _maxPerMint Max mints per mint function call.
      */
-    function updateMintStageMaxPer(uint256 _idx, uint256 _maxPerWallet, uint256 _maxPerMint) public override onlyOwner {
+    function updateMintStageMaxPerWallet(uint256 _idx, uint256 _maxPerWallet) public override onlyOwner {
         if (_idx >= mintStages.length) revert Errors.InvalidIndex(_idx);
 
         mintStages[_idx].maxPerWallet = _maxPerWallet;
-        mintStages[_idx].maxPerMint = _maxPerMint;
     }
 
     /**
@@ -126,6 +119,24 @@ abstract contract MintableERC721 is IMintableERC721, AutoIncrementERC721 {
         if (_idx >= mintStages.length) revert Errors.InvalidIndex(_idx);
 
         activeMintStage = _idx;
+    }
+
+    /**
+     * @dev Set maximum mints per mint transaction. Setting to 0 will allow
+     * unlimited mints per transaction.
+     * @param _maxPerMint Maximum mints.
+     */
+    function setMaxPerMint(uint256 _maxPerMint) public override onlyOwner {
+        maxPerMint = _maxPerMint;
+    }
+
+    /**
+     * @dev Set maximum mints per wallet. Setting this will override per mint stage
+     * maximums.
+     * @param _maxPerWallet Maximum mints per wallet.
+     */
+    function setMaxPerWallet(uint256 _maxPerWallet) public override onlyOwner {
+        maxPerWallet = _maxPerWallet;
     }
 
     /**
@@ -171,46 +182,57 @@ abstract contract MintableERC721 is IMintableERC721, AutoIncrementERC721 {
 
     function maximumAmountForActiveStage(
         address _owner,
-        bytes32[] calldata _merkleProof
+        bytes32[][] calldata _merkleProofs
     ) private view returns (uint256) {
-        if (_owner == address(0)) revert Errors.ZeroAddress();
-        if (!mintActive) return 0;
-        if (activeMintStage >= mintStages.length) revert Errors.InvalidIndex(activeMintStage);
+        if (_merkleProofs.length != (activeMintStage + 1)) revert InvalidProofLength();
 
-        if (mintStages[activeMintStage].merkleRoot != 0) {
-            if (_merkleProof.length == 0) return 0;
-            if (!verifyMerkleProof(_owner, mintStages[activeMintStage].merkleRoot, _merkleProof)) return 0;
+        uint256 maxAmount = 0;
+        if (maxPerWallet > 0) {
+            maxAmount = maxPerWallet;
+        } else {
+            for (uint256 i = 0; i < _merkleProofs.length; ) {
+                if (mintStages[i].merkleRoot != 0) {
+                    if (
+                        _merkleProofs[i].length == 0 ||
+                        !verifyMerkleProof(_owner, mintStages[i].merkleRoot, _merkleProofs[i])
+                    ) {
+                        unchecked {
+                            i++;
+                        }
+                        continue;
+                    }
+                }
+                maxAmount += mintStages[i].maxPerWallet;
+                unchecked {
+                    i++;
+                }
+            }
         }
 
-        if (
-            ownerMintCounter[mintStages[activeMintStage].ownerMintCounterIdx][_owner] >=
-            mintStages[activeMintStage].maxPerWallet
-        ) return 0;
+        if (ownerMintCounter[_owner] >= maxAmount) return 0;
 
-        uint256 maxAmount = Math.min(
-            mintStages[activeMintStage].maxPerWallet -
-                ownerMintCounter[mintStages[activeMintStage].ownerMintCounterIdx][_owner],
-            mintStages[activeMintStage].maxPerMint
-        );
-
-        if (MAX_SUPPLY > 0) {
-            maxAmount = Math.min(maxAmount, MAX_SUPPLY - _mintCounter);
+        uint256 maxRemaining = maxAmount - ownerMintCounter[_owner];
+        if (maxPerMint > 0 && maxRemaining > maxPerMint) {
+            maxRemaining = maxPerMint;
         }
 
-        return maxAmount;
+        if (MAX_SUPPLY > 0 && maxRemaining > (MAX_SUPPLY - mintCounter)) {
+            maxRemaining = MAX_SUPPLY - mintCounter;
+        }
+
+        return maxRemaining;
     }
 
     function mintPriceForActiveStage(
         address _owner,
         uint256 _amount,
-        bytes32[] calldata _merkleProof
+        bytes32[][] calldata _merkleProofs
     ) private view returns (uint256) {
         if (_owner == address(0)) revert Errors.ZeroAddress();
         if (_amount == 0) revert InvalidAmount();
         if (!mintActive) revert MintInactive();
-        if (activeMintStage >= mintStages.length) revert Errors.InvalidIndex(activeMintStage);
 
-        uint256 allowedAmount = maximumAmountForActiveStage(_owner, _merkleProof);
+        uint256 allowedAmount = maximumAmountForActiveStage(_owner, _merkleProofs);
         if (allowedAmount < _amount) revert InvalidAmount();
 
         return _amount * mintStages[activeMintStage].price;
@@ -219,50 +241,53 @@ abstract contract MintableERC721 is IMintableERC721, AutoIncrementERC721 {
     /**
      * @dev Get the maximum mint amount for the given owner, in the current mint stage.
      * @param _owner The owners address.
-     * @param _merkleProof The merkle proof to prove position in merkle tree.
+     * @param _merkleProofs The merkle proofs to prove position in merkle trees for each stage.
      * @return Returns the amount an owner can mint in the current mint stage.
      */
     function maximumAmountForOwner(
         address _owner,
-        bytes32[] calldata _merkleProof
+        bytes32[][] calldata _merkleProofs
     ) public view override returns (uint256) {
-        return maximumAmountForActiveStage(_owner, _merkleProof);
+        if (_owner == address(0)) revert Errors.ZeroAddress();
+        if (!mintActive) return 0;
+        return maximumAmountForActiveStage(_owner, _merkleProofs);
     }
 
     /**
      * @dev Get the mint price for the given owner and amount, in the current mint stage.
      * @param _owner The owners address.
      * @param _amount The amount to calculate price on. Needs to be within allowed amount.
-     * @param _merkleProof The merkle proof to prove position in merkle tree.
+     * @param _merkleProofs The merkle proofs to prove position in merkle trees for each stage.
      * @return Returns the mint price for the given owner and amount.
      */
     function mintPriceForAmount(
         address _owner,
         uint256 _amount,
-        bytes32[] calldata _merkleProof
+        bytes32[][] calldata _merkleProofs
     ) public view override returns (uint256) {
-        return mintPriceForActiveStage(_owner, _amount, _merkleProof);
+        return mintPriceForActiveStage(_owner, _amount, _merkleProofs);
     }
 
     /**
      * @dev Mint the given amount to the callers wallet.
      * @param _amount The amount to mint.
-     * @param _merkleProof The merkle proof to prove position in merkle tree.
+     * @param _merkleProofs The merkle proofs to prove position in merkle trees for each stage.
      */
-    function mint(uint256 _amount, bytes32[] calldata _merkleProof) public payable override {
-        uint256 price = mintPriceForActiveStage(msg.sender, _amount, _merkleProof);
+    function mint(uint256 _amount, bytes32[][] calldata _merkleProofs) public payable override {
+        uint256 price = mintPriceForActiveStage(msg.sender, _amount, _merkleProofs);
         if (nativePayment) {
             if (msg.value != price) revert InvalidPayment();
         } else {
-            if (paymentToken == address(0)) revert Errors.ZeroAddress();
+            address _paymentToken = paymentToken;
+            if (_paymentToken == address(0)) revert Errors.ZeroAddress();
             if (msg.value != 0) revert InvalidPayment();
             if (price > 0) {
-                if (IERC20(paymentToken).balanceOf(msg.sender) < price) revert NoBalance();
-                IERC20(paymentToken).transferFrom(msg.sender, address(this), price);
+                if (IERC20(_paymentToken).balanceOf(msg.sender) < price) revert NoBalance();
+                IERC20(_paymentToken).transferFrom(msg.sender, address(this), price);
             }
         }
 
-        ownerMintCounter[mintStages[activeMintStage].ownerMintCounterIdx][msg.sender] += _amount;
+        ownerMintCounter[msg.sender] += _amount;
         _autoIncrementMint(msg.sender, _amount);
     }
 }

@@ -24,7 +24,7 @@ abstract contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable2Step, Pausabl
     uint256 public immutable MAX_SUPPLY;
 
     /// @dev The mint counter.
-    uint256 internal _mintCounter;
+    uint256 public mintCounter;
 
     /**
      * @param _name Name of the collection.
@@ -121,9 +121,9 @@ abstract contract BaseERC721 is ERC721Enumerable, ERC2981, Ownable2Step, Pausabl
      * @param _tokenId Token ID to mint.
      */
     function _baseMint(address _to, uint256 _tokenId) internal {
-        if (MAX_SUPPLY > 0 && _mintCounter >= MAX_SUPPLY) revert MaxMinted();
+        if (MAX_SUPPLY > 0 && mintCounter >= MAX_SUPPLY) revert MaxMinted();
         _safeMint(_to, _tokenId);
-        _mintCounter += 1;
+        mintCounter += 1;
     }
 
     function _beforeTokenTransfer(

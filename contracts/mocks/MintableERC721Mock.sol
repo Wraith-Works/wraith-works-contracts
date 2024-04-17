@@ -5,8 +5,10 @@ import "../tokens/ERC721/MintableERC721.sol";
 
 contract MintableERC721Mock is MintableERC721 {
     constructor(
-        uint256 _maxSupply
+        uint256 _maxSupply,
+        uint256 _maxPerMint
     )
+        MintableERC721(_maxPerMint)
         BaseERC721(
             "Example",
             "EXAMPLE",
